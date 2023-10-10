@@ -32,6 +32,8 @@ export class SurrealSocket {
 		1000: "CLOSE_NORMAL",
 	};
 
+	public reconnect: boolean = true;
+
 	constructor({
 		url,
 		onOpen,
@@ -70,6 +72,11 @@ export class SurrealSocket {
 			ws.addEventListener("error", (e) => {
 				this.status = WebsocketStatus.CLOSED;
 				if (!resolved) {
+					if (this.reconnect) {
+						setTimeout(() => {
+							this.open();
+						}, 2500);
+					}
 					resolved = true;
 					reject("error" in e ? e.error : e.toString());
 				}
